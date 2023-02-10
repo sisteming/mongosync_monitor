@@ -22,6 +22,7 @@ exports = function() {
         jsonData.coll = partition.namespace.coll;
         let insert;
         console.log(`Successfully found document: ${partition}.`);
+        console.log(`TEST`);
         
         const now = new Date();
         const time = now.toLocaleString();
