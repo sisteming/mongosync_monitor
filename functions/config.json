@@ -1,0 +1,11 @@
+[
+    {
+        "name": "mongosyncMonitor",
+        "private": false
+    },
+    {
+        "name": "partitions",
+        "private": false,
+        "disable_arg_logs": true
+    }
+]

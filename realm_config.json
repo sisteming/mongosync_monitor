@@ -1,0 +1,9 @@
+{
+    "app_id": "msync_monitor-okrxz",
+    "config_version": 20210101,
+    "name": "mongosync_monitor",
+    "location": "US-VA",
+    "provider_region": "aws-us-east-1",
+    "deployment_model": "GLOBAL",
+    "environment": "testing"
+}
