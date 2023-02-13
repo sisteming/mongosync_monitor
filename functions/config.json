@@ -1,7 +1,8 @@
 [
     {
         "name": "mongosyncMonitor",
-        "private": false
+        "private": false,
+        "run_as_system": true
     },
     {
         "name": "partitions",
