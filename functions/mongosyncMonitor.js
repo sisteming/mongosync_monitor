@@ -4,6 +4,7 @@ exports = function() {
     Documentation on Triggers: https://www.mongodb.com/docs/atlas/app-services/triggers/overview/
 
   */
+    console.log(`Running mongosyncMonitor`);
     const collStatistics = context.services.get("msRS").db("mongosync_reserved_for_internal_use").collection("statistics");
     console.log(`coll is: ${collStatistics}.`);
     const statsDoc = collStatistics.findOne({ "_id.fieldName": "collectionStats" });
