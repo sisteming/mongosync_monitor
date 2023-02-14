@@ -17,7 +17,9 @@ exports = function() {
     return collPartitions.find({}).toArray().then(result => {
     let  i = 0;
       result.forEach(partition => {
+        console.log(`Running reviewPartition`);
         context.functions.execute("reviewPartition", partition, i);
+        
         i++;
         });
     }).catch(err => console.error(`Failed to find document: ${err}`));
