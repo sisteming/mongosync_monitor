@@ -12,7 +12,10 @@ exports = function() {
     //var collResumeData = context.services.get("msRS").db("mongosync_reserved_for_internal_use").collection("resumeData");
     //return collResumeData.findOne({});
     let jsonData = {};
-    
+    const now = new Date();
+    const time = now.toLocaleString();
+    const coll_msync_monitor = context.services.get("msRS").db("msync_monitor").collection("partitions");
+        
     return collPartitions.find({}).toArray().then(result => {
     let  i = 0;
       result.forEach(partition => {
@@ -21,15 +24,12 @@ exports = function() {
         jsonData.db = partition.namespace.db;
         jsonData.coll = partition.namespace.coll;
         let insert;
-        console.log(`Successfully found document: ${partition}.`);
-        console.log(`TEST`);
+        //console.log(`Successfully found document: ${partition}.`);
+        //console.log(`TEST`);
         
-        const now = new Date();
-        const time = now.toLocaleString();
-        const coll_msync_monitor = context.services.get("msRS").db("msync_monitor").collection("partitions");
         
         jsonData.ts = time;
-        console.log(`jsonData is: ${jsonData}.`);
+        //console.log(`jsonData is: ${jsonData}.`);
         insert = coll_msync_monitor.insertOne(jsonData);
         i++;
         });
