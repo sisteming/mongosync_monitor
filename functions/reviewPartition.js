@@ -5,13 +5,14 @@ exports = async function(partition,i){
 
   // Find the name of the MongoDB service you want to use (see "Linked Data Sources" tab)
   
-
+  var serviceName = "mongodb-atlas";
+  
   let jsonData = {};
   const now = new Date();
   const time = now.toLocaleString();
   // Get a collection from the context
   
-  const coll_msync_monitor = context.services.get("msRS").db("msync_monitor").collection("partitions");
+  const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("partitions");
   
   try {
         

@@ -4,13 +4,15 @@ exports = function() {
     Documentation on Triggers: https://www.mongodb.com/docs/atlas/app-services/triggers/overview/
 
   */
+    var serviceName = "mongodb-atlas";
+    
     console.log(`Running mongosyncMonitor`);
-    const collStatistics = context.services.get("msRS").db("mongosync_reserved_for_internal_use").collection("statistics");
+    const collStatistics = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("statistics");
     console.log(`coll is: ${collStatistics}.`);
     const statsDoc = collStatistics.findOne({ "_id.fieldName": "collectionStats" });
     /*const ts = statsDoc._id.fieldName.getTimestamp();
     */
-    var collResumeData = context.services.get("msRS").db("mongosync_reserved_for_internal_use").collection("resumeData");
+    var collResumeData = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("resumeData");
     console.log(`coll is: ${collResumeData}.`);
     //return collResumeData.findOne({});
     let jsonData = {};
@@ -23,7 +25,7 @@ exports = function() {
             console.log(`Successfully found document: ${result2.estimatedCopiedBytes}.`);
             const now = new Date();
             const time = now.toLocaleString();
-            const coll_msync_monitor = context.services.get("msRS").db("msync_monitor").collection("monitoring");
+            const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("monitoring");
             console.log(`coll is: ${coll_msync_monitor}.`);
             jsonData.ts = time;
             jsonData.state = result.state;

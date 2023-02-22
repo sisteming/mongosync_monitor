@@ -4,7 +4,10 @@ exports = function() {
     Documentation on Triggers: https://www.mongodb.com/docs/atlas/app-services/triggers/overview/
 
   */
-    const collPartitions = context.services.get("msRS").db("mongosync_reserved_for_internal_use").collection("partitions");
+  
+    var serviceName = "mongodb-atlas";
+    const collPartitions = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("partitions");
+    
     
     //const statsDoc = collStatistics.findOne({ "_id.fieldName": "collectionStats" });
     /*const ts = statsDoc._id.fieldName.getTimestamp();
