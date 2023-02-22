@@ -1,5 +1,5 @@
 {
-    "name": "msRS",
+    "name": "mongodb-atlas",
     "type": "mongodb-atlas",
     "config": {
         "clusterName": "msRS",
