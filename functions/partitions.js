@@ -11,25 +11,15 @@ exports = function() {
     */
     //var collResumeData = context.services.get("msRS").db("mongosync_reserved_for_internal_use").collection("resumeData");
     //return collResumeData.findOne({});
-    let jsonData = {};
     
+    //const coll_msync_monitor = context.services.get("msRS").db("msync_monitor").collection("partitions");
+        
     return collPartitions.find({}).toArray().then(result => {
     let  i = 0;
       result.forEach(partition => {
-        jsonData.id = i;
-        jsonData.partitionPhase = partition.partitionPhase;
-        jsonData.db = partition.namespace.db;
-        jsonData.coll = partition.namespace.coll;
-        let insert;
-        console.log(`Successfully found document: ${partition}.`);
+        console.log(`Running reviewPartition`);
+        context.functions.execute("reviewPartition", partition, i);
         
-        const now = new Date();
-        const time = now.toLocaleString();
-        const coll_msync_monitor = context.services.get("msRS").db("msync_monitor").collection("partitions");
-        
-        jsonData.ts = time;
-        console.log(`jsonData is: ${jsonData}.`);
-        insert = coll_msync_monitor.insertOne(jsonData);
         i++;
         });
     }).catch(err => console.error(`Failed to find document: ${err}`));

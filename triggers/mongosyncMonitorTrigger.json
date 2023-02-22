@@ -1,0 +1,17 @@
+{
+    "id": "63dc41f36731c7e6030f095e",
+    "name": "mongosyncMonitorTrigger",
+    "type": "SCHEDULED",
+    "config": {
+        "schedule": "*/1 * * * *",
+        "skip_catchup_events": false
+    },
+    "disabled": false,
+    "event_processors": {
+        "FUNCTION": {
+            "config": {
+                "function_name": "mongosyncMonitor"
+            }
+        }
+    }
+}

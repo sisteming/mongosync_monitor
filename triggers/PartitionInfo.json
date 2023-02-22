@@ -1,0 +1,17 @@
+{
+    "id": "63e4c4b06e86c2a607f6dab7",
+    "name": "PartitionInfo",
+    "type": "SCHEDULED",
+    "config": {
+        "schedule": "*/1 * * * *",
+        "skip_catchup_events": false
+    },
+    "disabled": false,
+    "event_processors": {
+        "FUNCTION": {
+            "config": {
+                "function_name": "partitions"
+            }
+        }
+    }
+}
