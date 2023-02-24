@@ -4,23 +4,18 @@ exports = function() {
     Documentation on Triggers: https://www.mongodb.com/docs/atlas/app-services/triggers/overview/
 
   */
-  
+    //service name for the data source
     var serviceName = "mongodb-atlas";
+
+    //access partitions collection on mongosync_reserved_for_internal_use database
     const collPartitions = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("partitions");
     
-    
-    //const statsDoc = collStatistics.findOne({ "_id.fieldName": "collectionStats" });
-    /*const ts = statsDoc._id.fieldName.getTimestamp();
-    */
-    //var collResumeData = context.services.get("msRS").db("mongosync_reserved_for_internal_use").collection("resumeData");
-    //return collResumeData.findOne({});
-    
-    //const coll_msync_monitor = context.services.get("msRS").db("msync_monitor").collection("partitions");
-        
+    //go through each partition so we review its details
     return collPartitions.find({}).toArray().then(result => {
     let  i = 0;
       result.forEach(partition => {
-        console.log(`Running reviewPartition`);
+        //console.log(`Running reviewPartition`);
+        //call reviewPartition to get the partition details
         context.functions.execute("reviewPartition", partition, i);
         
         i++;

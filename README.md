@@ -1,8 +1,5 @@
 # Mongosync monitor using Charts
 
-This is a private repository and is inspired by the MongoDB Atlas Billing Exploration using Charts repository.
-[Check out the official MongoDB Atlas Billing Exploration repository.](https://github.com/mongodb/atlas-billing)
-
 This repository includes a MongoDB App Service application monitors the progress of mongosync on the destination cluster and creates a timeline of its progress which is displayed in a Charts dashboard
 
 <img alt="Example Mongosync monitor" src="img/mongosyncmonitor-4.4.18-4.png">
@@ -13,7 +10,7 @@ Setting up this solution involves a number of steps in the Atlas web portal,
 followed by some command line scripts to be run locally. Finally you will
 open MongoDB Charts to import the dashboard.
 
-## Atlas Portal Steps
+## Atlas
 
 1. Sign into [MongoDB Atlas](https://cloud.mongodb.com)
 2. Create a new Project within the Atlas Organization which you wish to create the overview dashboard for. Give the project a descriptive name such as `Org Overview`.
@@ -31,7 +28,7 @@ open MongoDB Charts to import the dashboard.
    _ Add your IP address to the API Access List. \* Click **Done** when you're ready to save the new key to your Project
 
 
-## Local Command Line Steps
+## Command Line 
 
 1. Install the following prerequisites on your computer if they aren't already
    present:
@@ -55,7 +52,7 @@ open MongoDB Charts to import the dashboard.
 6. Wait for the script to complete, and then verify that the App Services app is present
    Note that the app contains 2 triggers enabled by default which will trigger every minute. The associated functions will only run and do stuff when the internal mongosync database is present and has data on it.
 
-## Charts Steps
+## Charts
 
 1. Sign into [MongoDB Atlas](https://cloud.mongodb.com) and select your desired project
 2. Click the **Charts** tab on the top nav, and activate Charts if you haven't done so already
@@ -69,7 +66,7 @@ open MongoDB Charts to import the dashboard.
 6. Click the green **Save** button
 7. Open the imported dashboard and get ready to see how mongosync migrates data to your destination cluster.
 
-# Solution Details
+# Details
 
 The App Services app in this repo contains three functions and two trigger. You
 can view and update the deployed app by clicking the **App Services** tab on the top Atlas nav.
