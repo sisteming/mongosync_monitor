@@ -4,6 +4,7 @@ exports = function() {
     Documentation on Triggers: https://www.mongodb.com/docs/atlas/app-services/triggers/overview/
 
   */
+    
     //Service name for the datasource in use (mongodb-atlas by default)
     var serviceName = "mongodb-atlas";
     
@@ -47,6 +48,7 @@ exports = function() {
             //console.log(JSON.stringify(doc));
             jsonData.copiedBytes = doc.estimatedCopiedBytes;
             jsonData.totalBytes = doc.estimatedTotalBytes;
+            //jsonData.uuid = uuidStringify(doc.uuid);
             console.log(JSON.stringify(doc));
             //jsonData.db = collUuidMap.findOne({ "_id": doc.uuid }).dbName;
             //jsonData.coll = collUuidMap.findOne({ "_id": doc.uuid }).srcCollName;
