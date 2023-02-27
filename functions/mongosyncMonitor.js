@@ -48,23 +48,31 @@ exports = function() {
             jsonData.state = result.state;
             jsonData.syncPhase = result.syncPhase;
             console.log(JSON.stringify(doc));
-            //const uuid = MUUID.from(doc.uuid);
+            
             jsonData.copiedBytes = doc.estimatedCopiedBytes;
             jsonData.totalBytes = doc.estimatedTotalBytes;
-            //console.log(JSON.stringify(uuid));
             
             
-            //const docd = collUuidMap.findOne({ "_id": doc.uuid }).dbName;
-            //jsonData.coll = collUuidMap.findOne({ "_id": doc.uuid }).srcCollName;
-            //const coll = collUuidMap.findOne({ $where: function() {return doc.uuid.toString() === this.bar.toString()}}))
-            // let namespace = collUuidMap.find({_id:doc._id.uuid}).toArray().then(r => 
-            // {
-            //   let ns = '';
-            //   console.log('yes');
-            //   ns = r.dbName +'.'+ r.srcCollName;
-            //   return ns;
-            // });
-            // jsonData.ns = namespace;
+            
+            //map UUID to gather namespace
+            let namespace = collUuidMap.find({"_id":doc._id.uuid}).toArray().then(s => {
+              let ns = '';
+              s.forEach(map => {
+                   
+                    console.log('yes');
+                    console.log(JSON.stringify(doc));
+                    console.log(JSON.stringify(map));
+                    console.log(JSON.stringify(map.dbName));
+                    console.log(JSON.stringify(map.srcCollName));
+                    ns = map.dbName +'.'+ map.srcCollName;
+                    
+            });
+            return ns;
+                
+           });
+            
+            //capture Namespace for statistics currently processed
+            jsonData.ns = namespace;
             
             //Capture remaining bytes
             jsonData.remaining = jsonData.totalBytes - jsonData.copiedBytes;
