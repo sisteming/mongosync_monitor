@@ -30,22 +30,14 @@ exports = function() {
     const time = now.toLocaleString();
   
     
-    //Go through resumeData (should be 1 doc)
-    collResumeData.findOne({}).then(result => {
-      if(result) {
-        let stateData = {};
-        stateData.ts = time;
-        stateData.state = result.state;
-        stateData.syncPhase = result.syncPhase;
-        collStateData.insertOne(stateData); 
-    }
-    });
+    
     
     let docs = [];
     //console.log(`Successfully found document: ${result.state}.`);
     
     //Now that we got the resumeData document, we capture the collectionStats values (state, syncPhase and copied/total bytes)
-   
+    let globalCopiedGB = 0;
+    let globalTotalGB = 0;
     collStatistics.find({ "_id.fieldName": "collectionStats" }).toArray().then(result2 => {
       result2.forEach(doc => {
           let jsonData = {};
@@ -86,6 +78,9 @@ exports = function() {
           jsonData.totalGB = (jsonData.totalBytes/1000/1000/1000).toFixed(2);
           jsonData.remainingGB = (jsonData.remaining/1000/1000/1000).toFixed(2);
           
+          //Keep global numbers
+          globalCopiedGB = globalCopiedGB + parseInt(jsonData.copiedGB,10);
+          globalTotalGB = globalTotalGB + parseInt(jsonData.totalGB,10);
 
           ///console.log(`jsonData is: ${jsonData}.`);
           //add document to docs
@@ -96,6 +91,19 @@ exports = function() {
       //insert multiple docs 
       //console.log(JSON.stringify(docs));            
       insert = coll_msync_monitor.insertMany(docs);
+      
+      //Go through resumeData (should be 1 doc)
+      collResumeData.findOne({}).then(result => {
+        if(result) {
+          let stateData = {};
+          stateData.ts = time;
+          stateData.state = result.state;
+          stateData.syncPhase = result.syncPhase;
+          stateData.copiedGB = globalCopiedGB;
+          stateData.totalGB = globalTotalGB;
+          collStateData.insertOne(stateData); 
+      }
+      });
       return docs;
     }).catch(err => console.error(`Failed to find document: ${err}`));
     return docs;
