@@ -21,6 +21,7 @@ exports = function() {
     
     //Get the resumeData collection in the mongosync_reserved_for_internal_use DB
     var collResumeData = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("resumeData");
+    var collStateData = context.services.get(serviceName).db("msync_monitor").collection("state");
     //console.log(`coll is: ${collResumeData}.`);
   
     
@@ -30,73 +31,72 @@ exports = function() {
   
     
     //Go through resumeData (should be 1 doc)
-    return collResumeData.findOne({}).then(result => {
-    if(result) {
-      let docs = [];
-      //console.log(`Successfully found document: ${result.state}.`);
-      
-      //Now that we got the resumeData document, we capture the collectionStats values (state, syncPhase and copied/total bytes)
-     
-      
-      
-      collStatistics.find({ "_id.fieldName": "collectionStats" }).toArray().then(result2 => {
-        result2.forEach(doc => {
-            let jsonData = {};
-            //console.log(`coll is: ${coll_msync_monitor}.`);
-            jsonData.ts = time;
-            //state and syncphase of mongosync
-            jsonData.state = result.state;
-            jsonData.syncPhase = result.syncPhase;
-            console.log(JSON.stringify(doc));
-            
-            jsonData.copiedBytes = doc.estimatedCopiedBytes;
-            jsonData.totalBytes = doc.estimatedTotalBytes;
-            
-            
-            
-            //map UUID to gather namespace
-            let namespace = collUuidMap.find({"_id":doc._id.uuid}).toArray().then(s => {
-              let ns = '';
-              s.forEach(map => {
-                   
-                    console.log('yes');
-                    console.log(JSON.stringify(doc));
-                    console.log(JSON.stringify(map));
-                    console.log(JSON.stringify(map.dbName));
-                    console.log(JSON.stringify(map.srcCollName));
-                    ns = map.dbName +'.'+ map.srcCollName;
-                    
-            });
-            return ns;
-                
-           });
-            
-            //capture Namespace for statistics currently processed
-            jsonData.ns = namespace;
-            
-            //Capture remaining bytes
-            jsonData.remaining = jsonData.totalBytes - jsonData.copiedBytes;
-            
-            //calculate GB from bytes
-            jsonData.copiedGB = (jsonData.copiedBytes/1000/1000/1000).toFixed(2);
-            jsonData.totalGB = (jsonData.totalBytes/1000/1000/1000).toFixed(2);
-            jsonData.remainingGB = (jsonData.remaining/1000/1000/1000).toFixed(2);
-            
-
-            ///console.log(`jsonData is: ${jsonData}.`);
-            //add document to docs
-            docs.push(jsonData);
-        });
-        //Collection we will use to write mongosync monitor results
-        const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("monitoring");
-        //insert multiple docs 
-        console.log(JSON.stringify(docs));            
-        insert = coll_msync_monitor.insertMany(docs);
-        return docs;
-      });
-      return docs;
-  }}).catch(err => console.error(`Failed to find document: ${err}`));
-  
-
+    collResumeData.findOne({}).then(result => {
+      if(result) {
+        let stateData = {};
+        stateData.ts = time;
+        stateData.state = result.state;
+        stateData.syncPhase = result.syncPhase;
+        collStateData.insertOne(stateData); 
+    }
+    });
     
-};
+    let docs = [];
+    //console.log(`Successfully found document: ${result.state}.`);
+    
+    //Now that we got the resumeData document, we capture the collectionStats values (state, syncPhase and copied/total bytes)
+   
+    collStatistics.find({ "_id.fieldName": "collectionStats" }).toArray().then(result2 => {
+      result2.forEach(doc => {
+          let jsonData = {};
+          //console.log(`coll is: ${coll_msync_monitor}.`);
+          jsonData.ts = time;
+          //state and syncphase of mongosync
+          //console.log(JSON.stringify(doc));
+          jsonData.copiedBytes = doc.estimatedCopiedBytes;
+          jsonData.totalBytes = doc.estimatedTotalBytes;
+          
+          
+          
+          //map UUID to gather namespace
+          let namespace = collUuidMap.find({"_id":doc._id.uuid}).toArray().then(s => {
+            let ns = '';
+            s.forEach(map => {
+                 
+                  // console.log('yes');
+                  // console.log(JSON.stringify(doc));
+                  // console.log(JSON.stringify(map));
+                  // console.log(JSON.stringify(map.dbName));
+                  // console.log(JSON.stringify(map.srcCollName));
+                  ns = map.dbName +'.'+ map.srcCollName;
+                  
+          });
+          return ns;
+              
+         });
+          
+          //capture Namespace for statistics currently processed
+          jsonData.ns = namespace;
+          
+          //Capture remaining bytes
+          jsonData.remaining = jsonData.totalBytes - jsonData.copiedBytes;
+          
+          //calculate GB from bytes
+          jsonData.copiedGB = (jsonData.copiedBytes/1000/1000/1000).toFixed(2);
+          jsonData.totalGB = (jsonData.totalBytes/1000/1000/1000).toFixed(2);
+          jsonData.remainingGB = (jsonData.remaining/1000/1000/1000).toFixed(2);
+          
+
+          ///console.log(`jsonData is: ${jsonData}.`);
+          //add document to docs
+          docs.push(jsonData);
+      });
+      //Collection we will use to write mongosync monitor results
+      const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("monitoring");
+      //insert multiple docs 
+      //console.log(JSON.stringify(docs));            
+      insert = coll_msync_monitor.insertMany(docs);
+      return docs;
+    }).catch(err => console.error(`Failed to find document: ${err}`));
+    return docs;
+  };
