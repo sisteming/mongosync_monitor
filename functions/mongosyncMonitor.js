@@ -7,7 +7,7 @@ exports = function() {
     
     //Service name for the datasource in use (mongodb-atlas by default)
     var serviceName = "mongodb-atlas";
-    
+
     //console.log(`Running mongosyncMonitor`);
 
     //Get the statistics collection in the mongosync_reserved_for_internal_use DB
@@ -27,7 +27,7 @@ exports = function() {
     
     const now = new Date();
     const time = now.toLocaleString();
-    
+  
     
     //Go through resumeData (should be 1 doc)
     return collResumeData.findOne({}).then(result => {
@@ -36,7 +36,9 @@ exports = function() {
       //console.log(`Successfully found document: ${result.state}.`);
       
       //Now that we got the resumeData document, we capture the collectionStats values (state, syncPhase and copied/total bytes)
-
+     
+      
+      
       collStatistics.find({ "_id.fieldName": "collectionStats" }).toArray().then(result2 => {
         result2.forEach(doc => {
             let jsonData = {};
@@ -45,13 +47,24 @@ exports = function() {
             //state and syncphase of mongosync
             jsonData.state = result.state;
             jsonData.syncPhase = result.syncPhase;
-            //console.log(JSON.stringify(doc));
+            console.log(JSON.stringify(doc));
+            //const uuid = MUUID.from(doc.uuid);
             jsonData.copiedBytes = doc.estimatedCopiedBytes;
             jsonData.totalBytes = doc.estimatedTotalBytes;
-            //jsonData.uuid = uuidStringify(doc.uuid);
-            console.log(JSON.stringify(doc));
-            //jsonData.db = collUuidMap.findOne({ "_id": doc.uuid }).dbName;
+            //console.log(JSON.stringify(uuid));
+            
+            
+            //const docd = collUuidMap.findOne({ "_id": doc.uuid }).dbName;
             //jsonData.coll = collUuidMap.findOne({ "_id": doc.uuid }).srcCollName;
+            //const coll = collUuidMap.findOne({ $where: function() {return doc.uuid.toString() === this.bar.toString()}}))
+            // let namespace = collUuidMap.find({_id:doc._id.uuid}).toArray().then(r => 
+            // {
+            //   let ns = '';
+            //   console.log('yes');
+            //   ns = r.dbName +'.'+ r.srcCollName;
+            //   return ns;
+            // });
+            // jsonData.ns = namespace;
             
             //Capture remaining bytes
             jsonData.remaining = jsonData.totalBytes - jsonData.copiedBytes;
