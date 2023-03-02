@@ -2,7 +2,7 @@
     "name": "mongodb-atlas",
     "type": "mongodb-atlas",
     "config": {
-        "clusterName": "msRS",
+        "clusterName": "mongosyncmonitor",
         "readPreference": "primary",
         "wireProtocolEnabled": false
     },

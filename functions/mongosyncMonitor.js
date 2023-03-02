@@ -22,57 +22,39 @@ exports = function() {
     //Get the resumeData collection in the mongosync_reserved_for_internal_use DB
     var collResumeData = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("resumeData");
     var collStateData = context.services.get(serviceName).db("msync_monitor").collection("state");
+    const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("monitoring");
+    
     //console.log(`coll is: ${collResumeData}.`);
   
-    
     
     const now = new Date();
     const time = now.toLocaleString();
   
     
+    let namespace = '';
+    //map UUID to gather namespace
     
-    
-    let docs = [];
+    var docs = [];
     //console.log(`Successfully found document: ${result.state}.`);
     
     //Now that we got the resumeData document, we capture the collectionStats values (state, syncPhase and copied/total bytes)
     let globalCopiedGB = 0;
     let globalTotalGB = 0;
+    
+    //Querying 1 document for each collection
     collStatistics.find({ "_id.fieldName": "collectionStats" }).toArray().then(result2 => {
+      //doc is a document for each collection with stats
+      var i = 0;
       result2.forEach(doc => {
-          let jsonData = {};
-          //console.log(`coll is: ${coll_msync_monitor}.`);
+          var jsonData = {};
+          
           jsonData.ts = time;
-          //state and syncphase of mongosync
+          
           //console.log(JSON.stringify(doc));
           jsonData.copiedBytes = doc.estimatedCopiedBytes;
           jsonData.totalBytes = doc.estimatedTotalBytes;
-          
-          
-          
-          //map UUID to gather namespace
-          let namespace = collUuidMap.find({"_id":doc._id.uuid}).toArray().then(s => {
-            let ns = '';
-            s.forEach(map => {
-                 
-                  // console.log('yes');
-                  // console.log(JSON.stringify(doc));
-                  // console.log(JSON.stringify(map));
-                  // console.log(JSON.stringify(map.dbName));
-                  // console.log(JSON.stringify(map.srcCollName));
-                  ns = map.dbName +'.'+ map.srcCollName;
-                  
-          });
-          return ns;
-              
-         });
-          
-          //capture Namespace for statistics currently processed
-          jsonData.ns = namespace;
-          
-          //Capture remaining bytes
           jsonData.remaining = jsonData.totalBytes - jsonData.copiedBytes;
-          
+                    
           //calculate GB from bytes
           jsonData.copiedGB = (jsonData.copiedBytes/1000/1000/1000).toFixed(2);
           jsonData.totalGB = (jsonData.totalBytes/1000/1000/1000).toFixed(2);
@@ -81,16 +63,27 @@ exports = function() {
           //Keep global numbers
           globalCopiedGB = globalCopiedGB + parseInt(jsonData.copiedGB,10);
           globalTotalGB = globalTotalGB + parseInt(jsonData.totalGB,10);
-
-          ///console.log(`jsonData is: ${jsonData}.`);
-          //add document to docs
-          docs.push(jsonData);
+          
+          //This is for 1 document of # collection
+          //Now we query the uuid for the current document which should return a single document
+          namespaceFromMap = collUuidMap.findOne({"_id":doc._id.uuid}).then(s => {
+              let ns = {};
+              //console.log('yes====',i,JSON.stringify(s.dstCollName));
+              jsonData.namespace = s.dbName+"."+s.dstCollName;
+              //console.log('jsonData====',i,JSON.stringify(jsonData.namespace));
+              //console.log("IN1",JSON.stringify(docs));   
+              //docs.push(jsonData);
+              insert = coll_msync_monitor.insertOne(jsonData); 
+              //console.log("INSERTED",JSON.stringify(jsonData));
+          });
+          
+        });
+        
+          
+          
+          
       });
-      //Collection we will use to write mongosync monitor results
-      const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("monitoring");
-      //insert multiple docs 
-      //console.log(JSON.stringify(docs));            
-      insert = coll_msync_monitor.insertMany(docs);
+      
       
       //Go through resumeData (should be 1 doc)
       collResumeData.findOne({}).then(result => {
@@ -103,8 +96,8 @@ exports = function() {
           stateData.totalGB = globalTotalGB;
           collStateData.insertOne(stateData); 
       }
-      });
-      return docs;
-    }).catch(err => console.error(`Failed to find document: ${err}`));
-    return docs;
+      }).catch(err => console.error(`Failed to find document: ${err}`));
+      
+      return 0;
+
   };
