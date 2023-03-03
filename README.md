@@ -2,7 +2,7 @@
 
 This repository includes a MongoDB App Service application monitors the progress of mongosync on the destination cluster and creates a timeline of its progress which is displayed in a Charts dashboard
 
-<img alt="Example Mongosync monitor" src="img/mongosyncmonitor-4.4.18-4.png">
+<img alt="Example Mongosync monitor" src="img/mongosync_monitor.png">
 
 # Setup
 
