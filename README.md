@@ -4,6 +4,8 @@ This repository includes a MongoDB App Service application monitors the progress
 
 <img alt="Example Mongosync monitor" src="img/mongosync_monitor.png">
 
+NOTE: This is currently work in progress - if you encounter any issue, ping me (Marco Bonezzi) on slack so I can try to help. 
+
 # Setup
 
 Setting up this solution involves a number of steps in the Atlas web portal,
@@ -51,6 +53,7 @@ open MongoDB Charts to import the dashboard.
    as well as the name of your cluster.
 6. Wait for the script to complete, and then verify that the App Services app is present
    Note that the app contains 2 triggers enabled by default which will trigger every minute. The associated functions will only run and do stuff when the internal mongosync database is present and has data on it.
+7. Once this is done, you might need to configure your Atlas cluster as the data source for the App Services app (selecting the cluster from the dropdown, but keeping the service name to mongodb-atlas).
 
 ## Charts
 
