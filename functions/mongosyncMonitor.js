@@ -49,9 +49,10 @@ exports = function() {
         collStatistics.find({ "_id.fieldName": "collectionStats" }).toArray().then(result2 => {
           //doc is a document for each collection with stats
           var i = 0;
+          var gbData = {};
           result2.forEach(doc => {
               var jsonData = {};
-              var gbData = {};
+              
               jsonData.ts = time;
               
               //console.log(JSON.stringify(doc));
@@ -68,44 +69,39 @@ exports = function() {
               globalCopiedGB = globalCopiedGB + parseInt(jsonData.copiedGB,10);
               globalTotalGB = globalTotalGB + parseInt(jsonData.totalGB,10);
               //console.log("globalCopiedGB - globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
-              gbData.copiedGB = globalCopiedGB;
-              gbData.totalGB = globalTotalGB;
-              //collStateData.insertOne(gbData);
+              
               
               //This is for 1 document of # collection
               //Now we query the uuid for the current document which should return a single document
               namespaceFromMap = collUuidMap.findOne({"_id":doc._id.uuid}).then(s => {
-                  let ns = {};
                   //console.log('yes====',i,JSON.stringify(s.dstCollName));
                   jsonData.namespace = s.dbName+"."+s.dstCollName;
-                  //console.log('jsonData====',i,JSON.stringify(jsonData.namespace));
-                  //console.log("IN1",JSON.stringify(docs));   
-                  //docs.push(jsonData);
                   insert = coll_msync_monitor.insertOne(jsonData); 
-                  //console.log("INSERTED",JSON.stringify(jsonData));
               });
               
             });
-            
-            
-            
-            //Go through resumeData (should be 1 doc)
-            collResumeData.findOne({}).then(resultRS => {
-            if(resultRS) {
-              if ((globalCopiedGB!=0) || (globalTotalGB!=0)) {
-                let stateData = {};
-                stateData.ts = time;
-                stateData.state = resultRS.state;
-                stateData.syncPhase = resultRS.syncPhase;
-                
-                // stateData.copiedGB = globalCopiedGB;
-                // stateData.totalGB = globalTotalGB;
-                console.log("written globalCopiedGB - globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
-                //collStateData.updateOne({'ts':time}, {$set:{stateData}});
-              }
+            gbData.ts = time;
+            gbData.copiedGB = globalCopiedGB;
+            gbData.totalGB = globalTotalGB;
+            try {
+               insert = collStateData.insertOne(gbData);
+            } catch (e) {
+               print (e);
+            }
 
-          }
-          }).catch(err => console.error(`Failed to find document: ${err}`));
+
+              
+              console.log("INSERTED",JSON.stringify(gbData));
+            let stateData = {};
+            stateData.ts = time;
+            stateData.state = result.state;
+            stateData.syncPhase = result.syncPhase;
+            
+            // stateData.copiedGB = globalCopiedGB;
+            // stateData.totalGB = globalTotalGB;
+            console.log("written globalCopiedGB - globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
+            collStateData.updateOne({'ts':time}, {$set:{'state':stateData.state,'syncPhase':stateData.syncPhase}});
+        
               
               
               
