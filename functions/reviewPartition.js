@@ -35,5 +35,5 @@ exports = async function(partition,i){
     return { error: err.message };
   }
 
-  return { result: findResult };
+  return { result: 0 };
 };

@@ -9,19 +9,31 @@ exports = function() {
 
     //access partitions collection on mongosync_reserved_for_internal_use database
     const collPartitions = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("partitions");
+    const collResumeData = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("resumeData");
     
-    //go through each partition so we review its details
-    return collPartitions.find({}).toArray().then(result => {
-    let  i = 0;
-      result.forEach(partition => {
-        //console.log(`Running reviewPartition`);
-        //call reviewPartition to get the partition details
-        context.functions.execute("reviewPartition", partition, i);
+    //Verify state of mongosync before doing anything else
+    collResumeData.findOne({}).then(result => {
+      //if phase is collection copy we inspect partitions
+      if (result.syncPhase == 'collection copy') {
+      
+        //go through each partition so we review its details
+        return collPartitions.find({}).toArray().then(result => {
+          console.log(result);
+          if (result){
+            let  i = 0;
+              result.forEach(partition => {
+                //console.log(`Running reviewPartition`);
+                //call reviewPartition to get the partition details
+                context.functions.execute("reviewPartition", partition, i);
+                
+                i++;
+                });
+          }
+          }).catch(err => console.error(`Failed to find document: ${err}`));
+        }
+      });
+      return -1;
         
-        i++;
-        });
-    }).catch(err => console.error(`Failed to find document: ${err}`));
-      //return jsonData;
   
 
     
