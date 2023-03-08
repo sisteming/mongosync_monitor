@@ -1,5 +1,10 @@
 [
     {
+        "name": "mongosyncMonitor",
+        "private": false,
+        "run_as_system": true
+    },
+    {
         "name": "partitions",
         "private": false,
         "run_as_system": true,
@@ -8,10 +13,5 @@
     {
         "name": "reviewPartition",
         "private": false
-    },
-    {
-        "name": "mongosyncMonitor",
-        "private": false,
-        "run_as_system": true
     }
 ]
