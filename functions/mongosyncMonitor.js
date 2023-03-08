@@ -1,3 +1,7 @@
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 exports = function() {
   /*
     A Scheduled Trigger will always call a function without arguments.
@@ -22,14 +26,16 @@ exports = function() {
     var collResumeData = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("resumeData");
     var collStateData = context.services.get(serviceName).db("msync_monitor").collection("state");
     const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("monitoring");
-    
+    //Now that we got the resumeData document, we capture the collectionStats values (state, syncPhase and copied/total bytes)
+    var globalCopiedGB = 0;
+    var globalTotalGB = 0;
     //Verify state of mongosync before doing anything else
     collResumeData.findOne({}).then(result => {
-      console.log(`Successfully found document: ${result.state}.`);
+      //console.log(`Successfully found document: ${result.state}.`);
       if (result.state != 'COMMITTED') {
         const now = new Date();
         const time = now.toLocaleString();
-        console.log(`Successfully found document: ${result.state}.`);
+        //console.log(`Successfully found document: ${result.state}.`);
         
         let namespace = '';
         //map UUID to gather namespace
@@ -37,9 +43,7 @@ exports = function() {
         var docs = [];
         //console.log(`Successfully found document: ${result.state}.`);
         
-        //Now that we got the resumeData document, we capture the collectionStats values (state, syncPhase and copied/total bytes)
-        let globalCopiedGB = 0;
-        let globalTotalGB = 0;
+        
         
         //Querying 1 document for each collection
         collStatistics.find({ "_id.fieldName": "collectionStats" }).toArray().then(result2 => {
@@ -47,7 +51,7 @@ exports = function() {
           var i = 0;
           result2.forEach(doc => {
               var jsonData = {};
-              
+              var gbData = {};
               jsonData.ts = time;
               
               //console.log(JSON.stringify(doc));
@@ -63,6 +67,10 @@ exports = function() {
               //Keep global numbers
               globalCopiedGB = globalCopiedGB + parseInt(jsonData.copiedGB,10);
               globalTotalGB = globalTotalGB + parseInt(jsonData.totalGB,10);
+              //console.log("globalCopiedGB - globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
+              gbData.copiedGB = globalCopiedGB;
+              gbData.totalGB = globalTotalGB;
+              //collStateData.insertOne(gbData);
               
               //This is for 1 document of # collection
               //Now we query the uuid for the current document which should return a single document
@@ -79,24 +87,32 @@ exports = function() {
               
             });
             
+            
+            
+            //Go through resumeData (should be 1 doc)
+            collResumeData.findOne({}).then(resultRS => {
+            if(resultRS) {
+              if ((globalCopiedGB!=0) || (globalTotalGB!=0)) {
+                let stateData = {};
+                stateData.ts = time;
+                stateData.state = resultRS.state;
+                stateData.syncPhase = resultRS.syncPhase;
+                
+                // stateData.copiedGB = globalCopiedGB;
+                // stateData.totalGB = globalTotalGB;
+                console.log("written globalCopiedGB - globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
+                //collStateData.updateOne({'ts':time}, {$set:{stateData}});
+              }
+
+          }
+          }).catch(err => console.error(`Failed to find document: ${err}`));
               
               
               
           });
           
           
-          //Go through resumeData (should be 1 doc)
-          collResumeData.findOne({}).then(result => {
-            if(result) {
-              let stateData = {};
-              stateData.ts = time;
-              stateData.state = result.state;
-              stateData.syncPhase = result.syncPhase;
-              stateData.copiedGB = globalCopiedGB;
-              stateData.totalGB = globalTotalGB;
-              collStateData.insertOne(stateData); 
-          }
-          }).catch(err => console.error(`Failed to find document: ${err}`));
+          
       }
     }).catch(info => console.info(`Mongosync not running ${info}`));
       return 0;
