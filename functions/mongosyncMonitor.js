@@ -64,7 +64,7 @@ exports = function() {
               jsonData.totalGB = (jsonData.totalBytes/1000/1000/1000).toFixed(2);
               jsonData.remainingGB = (jsonData.remaining/1000/1000/1000).toFixed(2);
               
-              //Keep global numbers
+              //Keep global numbers  
               globalCopiedGB = globalCopiedGB + parseInt(jsonData.copiedGB,10);
               globalTotalGB = globalTotalGB + parseInt(jsonData.totalGB,10);
               //console.log("globalCopiedGB - globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
