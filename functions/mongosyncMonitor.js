@@ -25,10 +25,11 @@ exports = function() {
     
     //Verify state of mongosync before doing anything else
     collResumeData.findOne({}).then(result => {
+      console.log(`Successfully found document: ${result.state}.`);
       if (result.state != 'COMMITTED') {
         const now = new Date();
         const time = now.toLocaleString();
-      
+        console.log(`Successfully found document: ${result.state}.`);
         
         let namespace = '';
         //map UUID to gather namespace

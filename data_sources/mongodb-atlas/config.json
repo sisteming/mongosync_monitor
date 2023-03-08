@@ -2,7 +2,7 @@
     "name": "mongodb-atlas",
     "type": "mongodb-atlas",
     "config": {
-        "clusterName": "shCmongosync",
+        "clusterName": "shDest",
         "readPreference": "primary",
         "wireProtocolEnabled": false
     },
