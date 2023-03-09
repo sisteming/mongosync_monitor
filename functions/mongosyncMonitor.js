@@ -1,7 +1,3 @@
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 exports = function() {
   /*
     A Scheduled Trigger will always call a function without arguments.
@@ -32,7 +28,7 @@ exports = function() {
     //Verify state of mongosync before doing anything else
     collResumeData.findOne({}).then(result => {
       //console.log(`Successfully found document: ${result.state}.`);
-      if (result.state != 'COMMITTED') {
+      
         const now = new Date();
         const time = now.toLocaleString();
         //console.log(`Successfully found document: ${result.state}.`);
@@ -109,7 +105,6 @@ exports = function() {
           
           
           
-      }
     }).catch(info => console.info(`Mongosync not running ${info}`));
       return 0;
 
