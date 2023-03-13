@@ -61,11 +61,11 @@ exports = async function() {
               var jsonData = {};
               
               jsonData.ts = time;
-              
+              jsonData.shard = doc._id.id;
               //console.log(JSON.stringify(doc));
               jsonData.copiedBytes = doc.estimatedCopiedBytes;
               jsonData.totalBytes = doc.estimatedTotalBytes;
-              jsonData.remaining = jsonData.totalBytes - jsonData.copiedBytes;
+              jsonData.remaining = jsonData.totalBytes - (jsonData.copiedBytes * nShards);
                         
               //calculate GB from bytes
               jsonData.copiedGB = (jsonData.copiedBytes/1000/1000/1000).toFixed(2);
