@@ -88,18 +88,18 @@ exports = async function() {
                   }
               });
               
-              stateData.ts = time;
-              stateData.state = result.state;
-              stateData.syncPhase = result.syncPhase;
-              stateData.nShards = nShards;
-              stateData.copiedGB = globalCopiedGB;
-              //Split totalGB by num Shards
-              stateData.totalGB = globalTotalGB / nShards;
+              
               
               
             });
             
-            
+          stateData.ts = time;
+          stateData.state = result.state;
+          stateData.syncPhase = result.syncPhase;
+          stateData.nShards = nShards;
+          stateData.copiedGB = globalCopiedGB;
+          //Split totalGB by num Shards
+          stateData.totalGB = globalTotalGB / nShards;  
           
           
           console.log("written globalCopiedGB - globalTotalGB",JSON.stringify(stateData.copiedGB),JSON.stringify(stateData.totalGB) );
