@@ -18,10 +18,5 @@
         "name": "getNumShards",
         "private": false,
         "disable_arg_logs": true
-    },
-    {
-        "name": "updateStateIfSharded",
-        "private": false,
-        "disable_arg_logs": true
     }
 ]
