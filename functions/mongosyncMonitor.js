@@ -67,22 +67,20 @@ exports = async function() {
               jsonData.copiedGBPerShard = parseFloat((jsonData.copiedBytes/1000/1000/1000).toFixed(2));
               jsonData.totalGB = parseFloat((jsonData.totalBytes/1000/1000/1000).toFixed(2));
               
-              //Calculate how much has been copied so far at a NS level
-              context.functions.execute("getCopiedGBperNamespace",doc._id.uuid).then(cGB => {
-                jsonData.copiedGBPerNS = parseFloat(cGB);
-                jsonData.remainingGB = jsonData.totalGB - jsonData.copiedGBPerNS;
-                if (jsonData.remainingGB < 0)
-                  jsonData.remainingGB = 0;
-                return jsonData;
-              })
               
- 
-              //Keep global numbers  
-              globalCopiedGB = globalCopiedGB + parseInt(jsonData.copiedGB,10);
-              globalTotalGB = globalTotalGB + parseInt(jsonData.totalGB,10);
               
-              //console.log("globalCopiedGB, globalTotalGB, copiedGBCluster",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB),JSON.stringify(copiedGBCluster) );
+              var delayInMilliseconds = 30000; //1 second
+
               
+                
+   
+                //Keep global numbers  
+                globalCopiedGB = globalCopiedGB + parseInt(jsonData.copiedGBPerShard,10);
+                globalTotalGB = globalTotalGB + parseInt(jsonData.totalGB,10);
+                
+                //console.log("globalCopiedGB, globalTotalGB, copiedGBCluster",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB),JSON.stringify(copiedGBCluster) );
+                
+              // }, delayInMilliseconds);
               
               //This is for 1 document of # collection
               //Now we query the uuid for the current document which should return a single document
@@ -90,15 +88,35 @@ exports = async function() {
                   //console.log('yes====',i,JSON.stringify(s));
                   if (s) {
                     jsonData.namespace = s.dbName+"."+s.dstCollName;
-                    console.log(JSON.stringify(jsonData));
-                    coll_msync_monitor.insertOne(jsonData);
-                    //console.log("ns globalCopiedGB, globalTotalGB, copiedGBCluster",JSON.stringify(jsonData.namespace), JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB),JSON.stringify(copiedGBCluster) );
+                    
+                    // console.log("#####",JSON.stringify(jsonData));
+                    
+                    
+                    // console.log("=====",JSON.stringify(jsonData.shard),JSON.stringify(time1));
+                    
+                    //Calculate how much has been copied so far at a NS level
+                    context.functions.execute("getCopiedGBperNamespace",doc._id.uuid).then(cGB => {
+                      
+                      //console.log(JSON.stringify(jsonData));
+                      jsonData.copiedGBPerNS = parseFloat(cGB);
+                      jsonData.remainingGB = jsonData.totalGB - jsonData.copiedGBPerNS;
+                      if (jsonData.remainingGB < 0)
+                        jsonData.remainingGB = 0;
+                      
+                      // console.log("+++++",JSON.stringify(jsonData.shard),JSON.stringify(time2));
+                      // console.log("______",JSON.stringify(jsonData));
+                      coll_msync_monitor.insertOne(jsonData);
+                      return cGB;
+                    });
+                    
+                    
                   }
+              
               });
               
               
               
-              return jsonData;
+              
             });
               
             stateData.ts = time;
@@ -110,9 +128,9 @@ exports = async function() {
             stateData.totalGB = parseInt(globalTotalGB / nShards);  
             
             
-            console.log("written globalCopiedGB - globalTotalGB",JSON.stringify(stateData.copiedGB),JSON.stringify(stateData.totalGB) );
+            //console.log("written globalCopiedGB - globalTotalGB",JSON.stringify(stateData.copiedGB),JSON.stringify(stateData.totalGB) );
             collStateData.insertOne(stateData);
-          
+            return stateData;
             });
             
     }).catch(log => console.log(`Mongosync not running ${log}`));
