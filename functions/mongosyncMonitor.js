@@ -5,7 +5,7 @@ exports = async function() {
 
   */
     //Service name for the datasource in use (mongodb-atlas by default)
-    var serviceName = "mongodb-atlas";
+    var serviceName = "mongodb-atlas";  
 
     //console.log(`Running mongosyncMonitor`);
 
@@ -51,7 +51,7 @@ exports = async function() {
           //console.log('result2',JSON.stringify(result2));
           result2.forEach(doc => {
               var jsonData = {};
-              //console.log('doc=',i,JSON.stringify(doc));
+              console.log('doc=',i,JSON.stringify(doc));
               jsonData.ts = time;
               jsonData.shard = doc._id.id;
               
@@ -64,8 +64,8 @@ exports = async function() {
               
               
               //calculate GB from bytes
-              jsonData.copiedGBPerShard = parseFloat((jsonData.copiedBytes/1000/1000/1000).toFixed(2));
-              jsonData.totalGB = parseFloat((jsonData.totalBytes/1000/1000/1000).toFixed(2));
+              jsonData.copiedGBPerMongosync = parseFloat((jsonData.copiedBytes/1000/1000/1000).toFixed(3));
+              jsonData.totalGB = parseFloat((jsonData.totalBytes/1000/1000/1000).toFixed(3));
               
               
               
@@ -75,8 +75,9 @@ exports = async function() {
                 
    
                 //Keep global numbers  
-                globalCopiedGB = globalCopiedGB + parseInt(jsonData.copiedGBPerShard,10);
-                globalTotalGB = globalTotalGB + parseInt(jsonData.totalGB,10);
+                globalCopiedGB = globalCopiedGB + parseFloat(jsonData.copiedGBPerMongosync,3);
+                globalTotalGB = globalTotalGB + parseFloat(jsonData.totalGB,3);
+                console.log("globalCopiedGB, globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
                 
                 //console.log("globalCopiedGB, globalTotalGB, copiedGBCluster",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB),JSON.stringify(copiedGBCluster) );
                 
@@ -118,14 +119,14 @@ exports = async function() {
               
               
             });
-              
+            console.log("globalCopiedGB, globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
             stateData.ts = time;
             stateData.state = result.state;
             stateData.syncPhase = result.syncPhase;
             stateData.nShards = nShards;
-            stateData.copiedGB = parseInt(globalCopiedGB);
+            stateData.copiedGB = parseFloat(globalCopiedGB,3);
             //Split totalGB by num Shards
-            stateData.totalGB = parseInt(globalTotalGB / nShards);  
+            stateData.totalGB = parseFloat(globalTotalGB / nShards,3);  
             
             
             //console.log("written globalCopiedGB - globalTotalGB",JSON.stringify(stateData.copiedGB),JSON.stringify(stateData.totalGB) );
