@@ -2,7 +2,7 @@
     "name": "mongodb-atlas",
     "type": "mongodb-atlas",
     "config": {
-        "clusterName": "msyncmonitor",
+        "clusterName": "shDest",
         "readPreference": "primary",
         "wireProtocolEnabled": false
     },
