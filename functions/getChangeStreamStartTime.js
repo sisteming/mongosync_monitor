@@ -5,6 +5,6 @@ exports = async function getChangeStreamStartTime(){
   
   return collGlobalState.findOne({}).then(r => {
                 const ts = r.changeStreamStartTime.toJSON()["$timestamp"];
-                return new Date(ts.t * 1000); 
+                return new Date(ts.t * 1000)
             }).catch(err => console.error(`Failed to find documents: ${err}`));
 }
