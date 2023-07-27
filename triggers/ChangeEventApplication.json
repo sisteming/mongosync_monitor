@@ -1,0 +1,17 @@
+{
+    "id": "64c2231973084250815fda41",
+    "name": "ChangeEventApplication",
+    "type": "SCHEDULED",
+    "config": {
+        "schedule": "*/1 * * * *",
+        "skip_catchup_events": false
+    },
+    "disabled": false,
+    "event_processors": {
+        "FUNCTION": {
+            "config": {
+                "function_name": "ChangeEventApplication"
+            }
+        }
+    }
+}
