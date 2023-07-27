@@ -15,6 +15,7 @@ exports = async function() {
     
     //Get the resumeData collection in the mongosync_reserved_for_internal_use DB
     var collResumeData = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("resumeData");
+    
     var collStateData = context.services.get(serviceName).db("msync_monitor").collection("state");
     const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("monitoring");
 
@@ -25,7 +26,7 @@ exports = async function() {
     
     //Get number of shards / mongosync processes
     const nShards = await  context.functions.execute("getNumShards");
-    
+    const startTime = await  context.functions.execute("getChangeStreamStartTime");
     
     
     
@@ -120,7 +121,9 @@ exports = async function() {
               
             });
             console.log("globalCopiedGB, globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
+            console.log("startTime",JSON.stringify(startTime.toLocaleString()));
             stateData.ts = time;
+            stateData.startTime = startTime.toLocaleString();
             stateData.state = result.state;
             stateData.syncPhase = result.syncPhase;
             stateData.nShards = nShards;

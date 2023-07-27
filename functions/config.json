@@ -39,5 +39,10 @@
         "name": "getProgressAPI",
         "private": false,
         "disable_arg_logs": true
+    },
+    {
+        "name": "getChangeStreamStartTime",
+        "private": false,
+        "disable_arg_logs": true
     }
 ]
