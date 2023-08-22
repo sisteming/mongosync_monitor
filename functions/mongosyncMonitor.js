@@ -27,7 +27,7 @@ exports = async function() {
     
     const mongosync_up = await  context.functions.execute("mongosyncIsUp");
     
-    if (mongosyncIsUp == -1) {
+    if (mongosync_up == -1) {
       return -1;
     }
     

@@ -41,7 +41,7 @@ function tt2Seconds(ts){
   
 }
 
-exports = function() {
+exports = async function() {
   /*
     A Scheduled Trigger will always call a function without arguments.
     Documentation on Triggers: https://www.mongodb.com/docs/atlas/app-services/triggers/overview/
@@ -59,6 +59,12 @@ exports = function() {
     
     //access cea collection to write the progress
     const collCEA = context.services.get(serviceName).db("msync_monitor").collection("cea_progress");
+    
+    const mongosync_up = await context.functions.execute("mongosyncIsUp");
+    
+    if (mongosync_up == -1) {
+      return -1;
+    }
     
     var dateState = '';
     //Verify state of mongosync before doing anything else

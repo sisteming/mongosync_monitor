@@ -1,4 +1,4 @@
-exports = function() {
+exports = async function() {
   /*
     A Scheduled Trigger will always call a function without arguments.
     Documentation on Triggers: https://www.mongodb.com/docs/atlas/app-services/triggers/overview/
@@ -10,6 +10,12 @@ exports = function() {
     //access partitions collection on mongosync_reserved_for_internal_use database
     const collPartitions = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("partitions");
     const collResumeData = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("resumeData");
+    
+    const mongosync_up = await  context.functions.execute("mongosyncIsUp");
+    
+    if (mongosync_up == -1) {
+      return -1;
+    }
     
     //Verify state of mongosync before doing anything else
     collResumeData.findOne({}).then(result => {
