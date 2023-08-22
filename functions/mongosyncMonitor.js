@@ -8,15 +8,21 @@ exports = async function() {
     var serviceName = "mongodb-atlas";  
 
     //console.log(`Running mongosyncMonitor`);
-
+    
     //Get the statistics collection in the mongosync_reserved_for_internal_use DB
     const collStatistics = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("statistics");
+    
+    if (collStatistics=='undefined') {
+      console.log(collStatistics);
+    }
+    
+    
     const collUuidMap = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("uuidMap");
     
     //Get the resumeData collection in the mongosync_reserved_for_internal_use DB
     var collResumeData = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("resumeData");
     
-    var collStateData = context.services.get(serviceName).db("msync_monitor").collection("state");
+    //var collStateData = context.services.get(serviceName).db("msync_monitor").collection("state");
     const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("monitoring");
 
     
@@ -30,10 +36,19 @@ exports = async function() {
     const nShards = await  context.functions.execute("getNumShards");
     const startTime = await  context.functions.execute("getChangeStreamStartTime");
   
+    try {
+      collResumeData.findOne({}).then(result => {})
+    } catch (error) {
+      console.error("mongosync_reserved_for_internal_use DB not found")
+      return -1;
+    }
+    
+  
     //Verify state of mongosync before doing anything else
     await collResumeData.findOne({}).then(result => {
-      
-      if (result.state == "RUNNING") {
+      console.log(typeof result)
+      if (typeof result != 'undefined' ) {
+        
       
       //console.log(`Successfully found document: ${result.state}.`);
         
@@ -123,19 +138,19 @@ exports = async function() {
             });
             console.log("globalCopiedGB, globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
             console.log("startTime",JSON.stringify(startTime.toLocaleString()));
-            stateData.ts = time;
-            stateData.startTime = startTime.toLocaleString();
-            stateData.state = result.state;
-            stateData.syncPhase = result.syncPhase;
-            stateData.nShards = nShards;
-            stateData.copiedGB = parseFloat(globalCopiedGB,3);
-            //Split totalGB by num Shards
-            stateData.totalGB = parseFloat(globalTotalGB / nShards,3);  
+            // stateData.ts = time;
+            // stateData.startTime = startTime.toLocaleString();
+            // stateData.state = result.state;
+            // stateData.syncPhase = result.syncPhase;
+            // stateData.nShards = nShards;
+            // stateData.copiedGB = parseFloat(globalCopiedGB,3);
+            // //Split totalGB by num Shards
+            // stateData.totalGB = parseFloat(globalTotalGB / nShards,3);  
             
             
-            //console.log("written globalCopiedGB - globalTotalGB",JSON.stringify(stateData.copiedGB),JSON.stringify(stateData.totalGB) );
-            collStateData.insertOne(stateData);
-            return stateData;
+            // //console.log("written globalCopiedGB - globalTotalGB",JSON.stringify(stateData.copiedGB),JSON.stringify(stateData.totalGB) );
+            // collStateData.insertOne(stateData);
+            // return stateData;
             });
       }
     }).catch(log => console.log(`Mongosync not running ${log}`));
