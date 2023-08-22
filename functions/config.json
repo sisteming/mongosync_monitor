@@ -1,11 +1,6 @@
 [
     {
-        "name": "getCopiedGBperNamespace",
-        "private": false,
-        "disable_arg_logs": true
-    },
-    {
-        "name": "getNumShards",
+        "name": "getChangeStreamStartTime",
         "private": false,
         "disable_arg_logs": true
     },
@@ -21,15 +16,6 @@
         "disable_arg_logs": true
     },
     {
-        "name": "reviewPartition",
-        "private": false
-    },
-    {
-        "name": "oplogMonitor",
-        "private": false,
-        "run_as_system": true
-    },
-    {
         "name": "ChangeEventApplication",
         "private": false,
         "run_as_system": true,
@@ -41,7 +27,26 @@
         "disable_arg_logs": true
     },
     {
-        "name": "getChangeStreamStartTime",
+        "name": "reviewPartition",
+        "private": false
+    },
+    {
+        "name": "getNumShards",
+        "private": false,
+        "disable_arg_logs": true
+    },
+    {
+        "name": "oplogMonitor",
+        "private": false,
+        "run_as_system": true
+    },
+    {
+        "name": "getCopiedGBperNamespace",
+        "private": false,
+        "disable_arg_logs": true
+    },
+    {
+        "name": "mongosyncIsUp",
         "private": false,
         "disable_arg_logs": true
     }
