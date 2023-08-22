@@ -24,16 +24,17 @@ exports = async function() {
     var globalCopiedGB = 0;
     var globalTotalGB = 0;
     
+    
+    
     //Get number of shards / mongosync processes
     const nShards = await  context.functions.execute("getNumShards");
     const startTime = await  context.functions.execute("getChangeStreamStartTime");
-    
-    
-    
-    
-    
+  
     //Verify state of mongosync before doing anything else
     await collResumeData.findOne({}).then(result => {
+      
+      if (result.state == "RUNNING") {
+      
       //console.log(`Successfully found document: ${result.state}.`);
         
         const now = new Date();
@@ -136,7 +137,7 @@ exports = async function() {
             collStateData.insertOne(stateData);
             return stateData;
             });
-            
+      }
     }).catch(log => console.log(`Mongosync not running ${log}`));
       return 0;
 
