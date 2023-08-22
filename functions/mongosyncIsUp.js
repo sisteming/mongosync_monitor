@@ -6,7 +6,11 @@ exports = async function mongosyncIsUp(){
   return collResumeData.findOne({}).then(r => {
                 //console.log(r)
                 if ( r == null) {
-                  console.log("mongosync is not running")
+                  console.log("==================================")
+                  console.log("   mongosync not started yet. ")
+                  console.log("==================================")
+                  console.log("Once mongosync is started and the mongosync_reserved_for_internal_use database exists, the mongosync monitor functions will start capturing the current progress.")
+                  console.log("==================================")
                   return -1
                 }
                 else {
