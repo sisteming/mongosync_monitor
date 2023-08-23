@@ -1,4 +1,4 @@
-exports = async function() {
+exports = async function mongosyncMonitor() {
   /*
     A Scheduled Trigger will always call a function without arguments.
     Documentation on Triggers: https://www.mongodb.com/docs/atlas/app-services/triggers/overview/
@@ -27,6 +27,7 @@ exports = async function() {
     
     const mongosync_up = await  context.functions.execute("mongosyncIsUp");
     
+    console.log("mongosync is up returned",mongosync_up)
     if (mongosync_up == -1) {
       return -1;
     }
