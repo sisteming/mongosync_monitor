@@ -91,7 +91,7 @@ exports = async function() {
         //LagTimeSeconds is the time between the current position of the mongosync process and the latest op
         // time of the source cluster.
         // GetLastAppliedTs returns the smaller Timestamp between lastAppliedCrudTs and lastAppliedDDLTs.
-        doc = {'ts':now.toLocaleString(),'id':r._id,'lastEventTS':tt2Date(lastAppliedTS).toLocaleString(), 'now':now.toLocaleString(), 'lagTimeSeconds': now_sec - tt2Seconds(lastAppliedTS) }
+        doc = {'ts':now.toLocaleString('en-US', { timeZone: 'UTC' }),'id':r._id,'lastEventTS':tt2Date(lastAppliedTS).toLocaleString('en-US', { timeZone: 'UTC' }), 'now':now.toLocaleString('en-US', { timeZone: 'UTC' }), 'lagTimeSeconds': now_sec - tt2Seconds(lastAppliedTS) }
         console.log(JSON.stringify(doc))
         
         

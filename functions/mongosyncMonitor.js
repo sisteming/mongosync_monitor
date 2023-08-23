@@ -43,7 +43,7 @@ exports = async function mongosyncMonitor() {
       //console.log(`Successfully found document: ${result.state}.`);
         
         const now = new Date();
-        const time = now.toLocaleString();
+        const time = now.toLocaleString('en-US', { timeZone: 'UTC' });
         //console.log(`Successfully found document: ${result.state}.`);
         
         let namespace = '';
@@ -127,9 +127,9 @@ exports = async function mongosyncMonitor() {
               
             });
             console.log("globalCopiedGB, globalTotalGB",JSON.stringify(globalCopiedGB),JSON.stringify(globalTotalGB) );
-            console.log("startTime",JSON.stringify(startTime.toLocaleString()));
+            console.log("startTime",JSON.stringify(startTime.toLocaleString('en-US', { timeZone: 'UTC' })));
             stateData.ts = time;
-            stateData.startTime = startTime.toLocaleString();
+            stateData.startTime = startTime.toLocaleString('en-US', { timeZone: 'UTC' });
             stateData.state = result.state;
             stateData.syncPhase = result.syncPhase;
             stateData.nShards = nShards;

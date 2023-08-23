@@ -9,7 +9,7 @@ exports = async function(partition,i){
   let jsonData = {};
   //capture timestamp
   const now = new Date();
-  const time = now.toLocaleString();
+  const time = now.toLocaleString('en-US', { timeZone: 'UTC' });
   // Get the partitions collection where we'll write (within the msync_monitor DB)
   const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("partitions");
   
