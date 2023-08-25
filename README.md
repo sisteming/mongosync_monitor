@@ -13,38 +13,41 @@ NOTE: If you encounter any issue, ping me (@marco) on #mongosync_monitor so we c
 
 The first section covers 4 important details:
 
-1. _CopiedGB vs TotalGB_: This shows the timeline (every minute) of the GB copied by mongosync at each stage VS the total GB to be copied.
-2. _Current Phase_: Current Phase mongosync is in (i.e. collection copy, change event application, committed)
-3. _Shards / mongosync_: number of shards / number of mongosync processes running in parallel (1 per shard on source cluster)
+1. _mongosync phase_: Timeline of the current phase that mongosync is in (namespaces created, collection copy, change event application, committed)
+2. _CopiedGB vs TotalGB_: This shows the timeline (every minute) of the GB copied by mongosync at each stage VS the total GB to be copied.
+3. _Current Phase_: Current Phase mongosync is in (i.e. collection copy, change event application, committed)
 4. _State_: mongosync's state, generally Running in most cases.
+5. _Mongosync start time_: Timestamp at when mongosync was started. Useful to track the oplog on the source cluster.
+6. _Partition Phase distribution_: Partitions have 3 phases, *not started*, *in progress* or *done*. This shows the current progress.
+7. _Shards / mongosync_: number of shards / number of mongosync processes running in parallel (1 per shard on source cluster)
 
 <img alt="Example Mongosync monitor" src="img/msync1.png">
 
 This next section covers mongosync's progress in more detail:
 
-5. _Progress per namespace_: as it says, GB copied for each namespace (i.e. counting all shards) over time.
-6. _Progress_: Gauge percentage indicator of Copied VS Total data to be copied.
-7. _Partitions not started_: During collection copy, mongosync uses partitions to split and copy ranges of data. This is an indicator of how many partitions are left to progress (i.e. in the state 'not started')
+5. _Copy Rate by minute (or hour)_: as it says, GB copied by mongosync aggregated by either minutes or hours.
+6. _CopiedGB vs TotalGB_: Timeline of the progress and copied GB compared to the total GB to be copied
 
 
 <img alt="Example Mongosync monitor" src="img/msync2.png">
 
 This sections is similar to the previous one:
 
+7. _Progress by namespace_: it is useful to see how many GB were copied for each namespace. 
 8. _Remaining data by namespace (GB)_: as it says, GB remaining to be copied for each namespace (across all shards) over time.
-9. _Partition Phase_: Count and distribution of partitions across their 2 main phases, 'done' or 'not started'.
+9. _Partitions per collection_: This is just another indicator to see progress of partitions and which collection is being processed (in the collection copy phase) based on the partitions phase for that collection.
 
 
 <img alt="Example Mongosync monitor" src="img/msync3.png">
 
 This sections shows:
 
-10. _Progress by namespace and shard distribution_: on a sharded cluster migration, it is useful to see how many GB were copied per shard for each namespace. Useful to see the overall data distribution on the target cluster.
-11. _Partitions per collection_: This is just another indicator to see progress of partitions and which collection is being processed (in the collection copy phase) based on the partitions phase for that collection.
+9. _Progress by namespace and shard distribution_: on a sharded cluster migration, it is useful to see how many GB were copied per shard for each namespace. Useful to see the overall data distribution on the target cluster.
+10. _Shard Copy Distribution_: Just raw GB copied per mongosync progress. 
 
 <img alt="Example Mongosync monitor" src="img/msync4.png">
 
-12. _Shard Copy Distribution_: Just raw GB copied per shard. Useful to see total data distribution across shards.
+
 
 
 
