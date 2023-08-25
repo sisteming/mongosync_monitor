@@ -17,8 +17,8 @@ exports = async function mongosyncMonitor() {
     //Get the resumeData collection in the mongosync_reserved_for_internal_use DB
     var collResumeData = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("resumeData");
     
-    var collStateData = context.services.get(serviceName).db("msync_monitor").collection("state");
-    const coll_msync_monitor = context.services.get(serviceName).db("msync_monitor").collection("monitoring");
+    var collStateData = context.services.get(serviceName).db("mongosync_monitor").collection("state");
+    const coll_msync_monitor = context.services.get(serviceName).db("mongosync_monitor").collection("monitoring");
 
     
     //Now that we got the resumeData document, we capture the collectionStats values (state, syncPhase and copied/total bytes)

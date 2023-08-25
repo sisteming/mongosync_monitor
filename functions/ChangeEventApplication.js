@@ -58,7 +58,7 @@ exports = async function() {
     const collResumeData = context.services.get(serviceName).db("mongosync_reserved_for_internal_use").collection("resumeData");
     
     //access cea collection to write the progress
-    const collCEA = context.services.get(serviceName).db("msync_monitor").collection("cea_progress");
+    const collCEA = context.services.get(serviceName).db("mongosync_monitor").collection("cea_progress");
     
     const mongosync_up = await context.functions.execute("mongosyncIsUp");
     
